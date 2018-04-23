@@ -1,0 +1,7 @@
+*** Settings ***
+Library           RfeLibrary.py
+
+*** Variables ***
+${host}    172.16.31.36:9090
+${apiId}   BOxALFZsYGw0GNzebQck1xKs
+${apiKey}  1285384ddfb057814bad78127bc789be

@@ -1,0 +1,36 @@
+*** Settings ***
+Resource          ../res.txt
+
+*** Test Cases ***
+人脸更新
+    ${url}    Set Variable    http://${host}/api/v1/face/update
+    ${timestamp}    Get Timestamp
+    ${pre_sign}    Set Variable    api/v1/face/update${apiKey}${timestamp}
+    log    ${pre_sign}
+    ${sign}    toMD5    ${pre_sign}
+    log    ${sign}
+    ${userImg}    toBase64    ../imgs/30000007.jpg
+    log    ${userImg}
+    ${uId}    Set Variable    A01
+    ${userRegion}    Set Variable    水星
+    ${body}    Create Dictionary    apiId=${apiId}    timestamp=${timestamp}    userImg=${userImg}    sign=${sign}    uId=${uId}
+    ...    userSex=1    userRegion=${userRegion}
+    ${rs}    reqByJson    post    ${url}    ${body}
+    log    ${rs.text}
+    ${except}    Set Variable    {"reqId":"20180420161203400","stauts":0,"msg":"Success"}
+    AssertJson    ${except}    ${rs.text}    1
+
+人脸识别
+    ${url}    Set Variable    http://${host}/api/v1/face/facerecognize
+    ${timestamp}    Get Timestamp
+    ${pre_sign}    Set Variable    api/v1/facerecognize${apiKey}${timestamp}
+    ${sign}    toMD5    ${pre_sign}
+    ${feature}    getFile    featureFile/30000004.txt
+    ${faceInfo1}    Create Dictionary    fId=B0001234    feature=${feature}
+    ${faceInfos}    Create List    ${faceInfo1}
+    ${body}    Create Dictionary    apiId=${apiId}    timestamp=${timestamp}    cameraId=A0000001    sign=${sign}    cameraIp=10.23.25.44
+    ...    faceInfos=${faceInfos}
+    ${rs}    reqByJson    post    ${url}    ${body}
+    log    ${rs.text}
+    ${except}    Set Variable    {"faceInfo":[{"fId":"B0001234","uId":"test3000004","userSex":1,"recognizeTime":"20180423160539","rate":0.452894}],"faceNum":1,"reqId":"20180423160539402","stauts":0,"msg":"Success"}
+    assertJson    ${except}    ${rs.text}    1    自定义断言错误
